@@ -34,4 +34,13 @@ public class Course {
     public void setCredit(int credit) {
         this.credit = credit;
     }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", credit=" + credit +
+                '}';
+    }
 }
