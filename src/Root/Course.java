@@ -1,14 +1,18 @@
 package Root;
 
+import java.util.ArrayList;
+
 public class Course {
     private String id;
     private String name;
     private int credit;
+    private ArrayList<Student> studentList;
 
-    public Course(String id, String name, int credit) {
+    public Course(String id, String name, int credit,ArrayList<Student> studentList) {
         this.id = id;
         this.name = name;
         this.credit = credit;
+        this.studentList = studentList;
     }
 
     public String getId() {
@@ -33,6 +37,14 @@ public class Course {
 
     public void setCredit(int credit) {
         this.credit = credit;
+    }
+
+    public ArrayList<Student> getStudentList() {
+        return studentList;
+    }
+
+    public void setStudentList(ArrayList<Student> studentList) {
+        this.studentList = studentList;
     }
 
     @Override
