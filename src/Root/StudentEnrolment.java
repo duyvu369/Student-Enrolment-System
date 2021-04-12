@@ -79,13 +79,18 @@ public class StudentEnrolment implements StudentEnrolmentManager {
             }
         }
     }
-    public void showCourseInfo(String id, ArrayList<Course> allCourses){
+    public static void showCourseInfo(ArrayList<Course> allCourses){
+        System.out.println("Enter the course ID: ");
+        Scanner input2 = new Scanner(System.in);
+        System.out.println("Please Enter the course ID: ");
+        String option2 = input2.next();
         for (int i = 0; i < allCourses.size(); i++) {
-            if (allCourses.get(i).getId().equals(id)) {
+            if (allCourses.get(i).getId().equals(option2)) {
                 System.out.println("Course information: ");
-                allCourses.get(i).toString();
+                System.out.println(allCourses.get(i));
             }
         }
+
     }
     public static void  mainMenu(){
         System.out.println("Main Menu");
@@ -165,6 +170,11 @@ public class StudentEnrolment implements StudentEnrolmentManager {
         allCourses3.add(course5);allCourses3.add(course6);
         StudentEnrolment sem3 = new StudentEnrolment("3",allCourses3);
 
+        ArrayList<Course> allCourses = new ArrayList<Course>();
+
+        allCourses.addAll(allCourses1);
+        allCourses.addAll(allCourses2);
+        allCourses.addAll(allCourses3);
 
         //Console App interface
         mainMenu();
@@ -173,6 +183,9 @@ public class StudentEnrolment implements StudentEnrolmentManager {
             int option = user.nextInt();
             if (option==1){
                 showAllSemesterInfo(sem1,sem2,sem3);
+            }
+            if (option==2){
+                showCourseInfo(allCourses);
             }
 
 
