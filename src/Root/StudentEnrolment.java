@@ -34,13 +34,15 @@ public class StudentEnrolment implements StudentEnrolmentManager{
         this.semester = semester;
     }
 
-    public void add(Student student, Course course){
+    public boolean add(Student student, Course course){
         if(course.getStudentList().contains(student))
         {
             System.out.println("The student have already enrolled this course!");
+            return false;
         } else {
             course.getStudentList().add(student);
             System.out.println("Successfully added a new student to the course.");
+            return true;
         }
     }
 
@@ -54,9 +56,17 @@ public class StudentEnrolment implements StudentEnrolmentManager{
         }
     }
 
-    public void delete(Student student,Course course){
-        course.getStudentList().remove(student);
-        System.out.println("Student deleted!");
+    public boolean delete(Student student,Course course){
+        if(course.getStudentList().contains(student))
+        {
+            System.out.println("The student does not exist in this course!");
+            return false;
+        } else {
+            course.getStudentList().remove(student);
+            System.out.println("Student deleted!");
+            return true;
+        }
+
     }
     public void getAll(){
         System.out.println(course);
