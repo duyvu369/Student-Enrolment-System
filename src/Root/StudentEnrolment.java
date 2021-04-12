@@ -1,7 +1,7 @@
 package Root;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Scanner;
 
 public class StudentEnrolment implements StudentEnrolmentManager {
     private Student student;
@@ -66,12 +66,8 @@ public class StudentEnrolment implements StudentEnrolmentManager {
         }
 
     }
-
-    public void showAllStudent(ArrayList<Student> allStudents) {
-        System.out.println(allStudents);
-    }
-
     public void showAllCourses(ArrayList<Course> allCourses) {
+        System.out.println(semester);
         System.out.println(allCourses);
     }
 
@@ -91,8 +87,45 @@ public class StudentEnrolment implements StudentEnrolmentManager {
             }
         }
     }
+    public static void  mainMenu(){
+        System.out.println("Main Menu");
+        System.out.println("1.Show all courses in a semester");
+        System.out.println("2.Show a course info");
+        System.out.println("3.Show a student info");
+        System.out.println("4.Enrol a student");
+        System.out.println("5.Remove a student");
+    }
+    public static void showAllCourseInfo(StudentEnrolment sem){
+        System.out.println("Semester " + sem.getSemester());
+        for (int i=0;i<sem.getCourseList().size();i++){
+            System.out.println(sem.getCourseList().get(i).toString());
+        }
+    }
+    public static void showAllSemesterInfo(StudentEnrolment sem1,StudentEnrolment sem2,StudentEnrolment sem3){
+        Scanner input1 = new Scanner(System.in);
+        System.out.println("There are a total of 3 semesters, if you wish to see courses in all semester type 4! ");
+        System.out.print("Please enter the semester number: ");
+        int option = input1.nextInt();
+        if (option==1){
+            showAllCourseInfo(sem1);
+        } else if (option == 2){
+            showAllCourseInfo(sem2);
+        } else if (option == 3){
+            showAllCourseInfo(sem3);
+        } else if (option == 4){
+            showAllCourseInfo(sem1);
+            showAllCourseInfo(sem2);
+            showAllCourseInfo(sem3);
+        } else {
+            System.out.println("Invalid input, going back to main menu!");
+            mainMenu();
+        }
+
+    }
 
     public static void main(String[] args){
+
+        //Create new students
         Student student1 = new Student("s38329579","Nguyen Thi Hoa", "21/05/1995");
         Student student2 = new Student("s38474918","John Junior", "01/07/1996");
         Student student3 = new Student("s35459841","Dang Thi Anh", "03/09/1990");
@@ -101,15 +134,49 @@ public class StudentEnrolment implements StudentEnrolmentManager {
         Student student6 = new Student("s32310900","Nguyen Tan Khoi", "22/03/1995");
         Student student7 = new Student("s35439081","Nguyen Anh Duy", "15/08/1994");
         Student student8 = new Student("s31243241","Robert Maggy", "11/03/2000");
+
+
         ArrayList<Student> allStudents = new ArrayList<Student>();
-        allStudents.add(student1);
-        allStudents.add(student2);
-        allStudents.add(student3);
-        allStudents.add(student4);
-        allStudents.add(student5);
-        allStudents.add(student6);
-        allStudents.add(student7);
-        allStudents.add(student8);
+
+        //Add all the student info into a student arrayList
+        allStudents.add(student1);allStudents.add(student2);allStudents.add(student3);allStudents.add(student4);
+        allStudents.add(student5);allStudents.add(student6);allStudents.add(student7);allStudents.add(student8);
+
+        //Create new courses
+        Course course1 = new Course("O2SNDS5","Introduction to Information Technology",12);
+        Course course2 = new Course("12543MS","Introduction to International Business",12);
+        Course course3 = new Course("9DSANJO","Software Engineering Project Management",12);
+        Course course4 = new Course("45SHJAH","Vietnamese 1",12);
+        Course course5 = new Course("45XNFHS","Digital Marketing",12);
+        Course course6 = new Course("12ZXMND","Dipomatic",12);
+
+        ArrayList<Course> allCourses1 = new ArrayList<Course>();
+        ArrayList<Course> allCourses2 = new ArrayList<Course>();
+        ArrayList<Course> allCourses3 = new ArrayList<Course>();
+
+        //Add all the courses to the approritate semester
+
+        allCourses1.add(course1);allCourses1.add(course2);
+        StudentEnrolment sem1 = new StudentEnrolment("1",allCourses1);
+
+        allCourses2.add(course3);allCourses2.add(course4);
+        StudentEnrolment sem2 = new StudentEnrolment("2",allCourses2);
+
+        allCourses3.add(course5);allCourses3.add(course6);
+        StudentEnrolment sem3 = new StudentEnrolment("3",allCourses3);
+
+
+        //Console App interface
+        mainMenu();
+       Scanner user = new Scanner(System.in);
+            System.out.print("Please choose an option: ");
+            int option = user.nextInt();
+            if (option==1){
+                showAllSemesterInfo(sem1,sem2,sem3);
+            }
+
+
+
 
     }
 

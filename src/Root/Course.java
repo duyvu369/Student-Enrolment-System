@@ -8,11 +8,10 @@ public class Course {
     private int credit;
     private ArrayList<Student> studentList;
 
-    public Course(String id, String name, int credit,ArrayList<Student> studentList) {
+    public Course(String id, String name, int credit) {
         this.id = id;
         this.name = name;
         this.credit = credit;
-        this.studentList = studentList;
     }
 
     public String getId() {
@@ -49,10 +48,8 @@ public class Course {
 
     @Override
     public String toString() {
-        return "Course{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", credit=" + credit +
-                '}';
+        return
+                "Course id: " + id  + ", Number of credit: " + credit +
+                ", Course name: " + name;
     }
 }
