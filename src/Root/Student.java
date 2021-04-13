@@ -1,12 +1,12 @@
 package Root;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Student {
     private String sid;
     private String name;
     private String birthdate;
-
     public Student(String sid, String name, String birthdate) {
         this.sid = sid;
         this.name = name;
@@ -39,10 +39,8 @@ public class Student {
 
     @Override
     public String toString() {
-        return "Student{" +
-                "sid='" + sid + '\'' +
-                ", name='" + name + '\'' +
-                ", birthdate=" + birthdate +
-                '}';
+        return "sId: " + sid +"\n"+
+                "Full Name: " + name +"\n"+
+                "Birthdate: " + birthdate;
     }
 }

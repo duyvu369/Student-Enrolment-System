@@ -6,7 +6,6 @@ public class Course {
     private String id;
     private String name;
     private int credit;
-    private ArrayList<Student> studentList;
 
     public Course(String id, String name, int credit) {
         this.id = id;
@@ -36,14 +35,6 @@ public class Course {
 
     public void setCredit(int credit) {
         this.credit = credit;
-    }
-
-    public ArrayList<Student> getStudentList() {
-        return studentList;
-    }
-
-    public void setStudentList(ArrayList<Student> studentList) {
-        this.studentList = studentList;
     }
 
     @Override
