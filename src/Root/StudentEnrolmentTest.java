@@ -7,67 +7,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class StudentEnrolmentTest {
 
     @Test
-    void testToString() {
-    }
+    void createEnrolment() {
 
-    @Test
-    void getStudent() {
-    }
+        String[] data = {"S123123","Nguyen Thi Anh","21/03/2000","CPOS1234","Introduction to marketing","8","2021C"};
 
-    @Test
-    void setStudent() {
-    }
+        StudentEnrolment newEnrolment = StudentEnrolment.createEnrolment(data);
 
-    @Test
-    void getCourse() {
-    }
+        assertEquals("CPOS1234",newEnrolment.getCourse().getId());
+        assertEquals("2021C",newEnrolment.getSemester());
+        assertEquals("S123456",newEnrolment.getStudent().getSid());
 
-    @Test
-    void setCourse() {
     }
-
-    @Test
-    void getSemester() {
-    }
-
-    @Test
-    void setSemester() {
-    }
-
-    @Test
-    void enrol() {
-    }
-
-    @Test
-    void delete() {
-    }
-
-    @Test
-    void showAllCourses() {
-    }
-
-    @Test
-    void showAllStudents() {
-    }
-
-    @Test
-    void showStudentInfo() {
-    }
-
-    @Test
-    void showCourseInfo() {
-    }
-
-    @Test
-    void exit() {
-    }
-
-    @Test
-    void mainMenu() {
-    }
-
-    @Test
-    void showSemesterInfo() {
-    }
-
 }

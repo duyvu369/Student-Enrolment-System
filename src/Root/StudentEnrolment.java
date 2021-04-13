@@ -62,7 +62,7 @@ public class StudentEnrolment {
         this.semester = semester;
     }
 
-    private static StudentEnrolment createEnrolment(String[] fileInput){
+    protected static StudentEnrolment createEnrolment(String[] fileInput){
         String sid = fileInput[0];
         String name = fileInput[1];
         String birthday = fileInput[2];
@@ -185,7 +185,7 @@ public class StudentEnrolment {
 
     protected static void showStudentInfo(List<StudentEnrolment> enrolmentList){
         try {
-            FileWriter csvWriter = new FileWriter("student_info.csv",true);
+            FileWriter csvWriter = new FileWriter("student_info.csv");
             BufferedWriter bufferedWriter = new BufferedWriter(csvWriter);
 
             Scanner input3 = new Scanner(System.in);
@@ -222,7 +222,7 @@ public class StudentEnrolment {
 
     protected static void showCourseInfo(List<StudentEnrolment> enrolmentList) {
         try {
-            FileWriter csvWriter = new FileWriter("course_info.csv",true);
+            FileWriter csvWriter = new FileWriter("course_info.csv");
             BufferedWriter bufferedWriter = new BufferedWriter(csvWriter);
 
             System.out.println("Enter the course ID: ");
@@ -252,7 +252,7 @@ public class StudentEnrolment {
     }
 
     protected static void showSemesterInfo(List<StudentEnrolment> enrolmentList) {
-        try {FileWriter csvWriter = new FileWriter("semester_info.csv",true);
+        try {FileWriter csvWriter = new FileWriter("semester_info.csv");
             BufferedWriter bufferedWriter = new BufferedWriter(csvWriter);
 
         Scanner input1 = new Scanner(System.in);
@@ -355,6 +355,7 @@ public class StudentEnrolment {
             List<StudentEnrolment> studentEnrolmentList = readBooksFromCSV("C:\\Users\\ADMIN\\Desktop\\SES\\Student-Enrolment-System\\default.csv");
             mainMenu(studentEnrolmentList);
         } else{
+            System.out.println("Type in the file name: ");
             Scanner file = new Scanner(System.in);
             String csv = file.next();
             List<StudentEnrolment> studentEnrolmentList = readBooksFromCSV(csv);
