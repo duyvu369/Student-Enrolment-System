@@ -1,8 +1,17 @@
 package Root;
 
+import org.junit.jupiter.params.shadow.com.univocity.parsers.csv.CsvWriter;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class StudentEnrolment {
@@ -53,72 +62,39 @@ public class StudentEnrolment {
         this.semester = semester;
     }
 
-    public static void enrol(ArrayList<Student> allStudents, ArrayList<Course> allCourses, List<StudentEnrolment> enrolmentList) {
-        Student selectedStudent = new Student("", "", "");
-        Course selectedCourse = new Course("", "", 0);
-        System.out.println("Enter the student ID: ");
-        Scanner input4a = new Scanner(System.in);
-        String option4a = input4a.next();
-        ArrayList<String> studentSID = new ArrayList<String>();
-        for (Student student : allStudents) {
-            studentSID.add(student.getSid());
-        }
-
-        if (studentSID.contains(option4a)) {
-            for (Student student : allStudents) {
-                if (student.getSid().equals(option4a)) {
-                    selectedStudent = student;
-                }
-            }
-        } else {
-            System.out.println("The student does not exist in the school!");
-            exit(allStudents, allCourses, enrolmentList);
-        }
-        System.out.print("Please Enter semester ");
-        Scanner input4b = new Scanner(System.in);
-        String option4b = input4b.next();
-        System.out.print("Please Enter the course ID: ");
-        Scanner input4c = new Scanner(System.in);
-        String option4c = input4c.next();
-        ArrayList<String> courseID = new ArrayList<String>();
-        for (Course course : allCourses) {
-            courseID.add(course.getId());
-        }
-        if (courseID.contains(option4c)) {
-            for (Course course : allCourses) {
-                if (course.getId().equals(option4c)) {
-                    selectedCourse = course;
-                }
-            }
-        } else {
-            System.out.println("Invalid course ID!");
-            exit(allStudents, allCourses, enrolmentList);
-        }
-        enrolmentList.add(new StudentEnrolment(option4b, selectedStudent, selectedCourse));
-        System.out.println("Successfully enrolled student " + selectedStudent.getSid() + " to Course" + selectedCourse.getId() + " " + selectedCourse.getName());
-        exit(allStudents, allCourses, enrolmentList);
+    private static StudentEnrolment createEnrolment(String[] fileInput){
+        String sid = fileInput[0];
+        String name = fileInput[1];
+        String birthday = fileInput[2];
+        Student student = new Student(sid,name,birthday);
+        String id = fileInput[3];
+        String courseName = fileInput[4];
+        int credit = Integer.parseInt(fileInput[5]);
+        Course course = new Course(id,courseName,credit);
+        String semester = fileInput[6];
+        return new StudentEnrolment(semester,student,course);
     }
 
-    public static void delete(ArrayList<Student> allStudents, ArrayList<Course> allCourses, List<StudentEnrolment> enrolmentList) {
+    protected static void enrol(List<StudentEnrolment> enrolmentList) {
         Student selectedStudent = new Student("", "", "");
         Course selectedCourse = new Course("", "", 0);
         System.out.println("Enter the student ID: ");
         Scanner input4a = new Scanner(System.in);
         String option4a = input4a.next();
         ArrayList<String> studentSID = new ArrayList<String>();
-        for (Student student : allStudents) {
-            studentSID.add(student.getSid());
+        for (StudentEnrolment enrolment : enrolmentList) {
+            studentSID.add(enrolment.getStudent().getSid());
         }
 
         if (studentSID.contains(option4a)) {
-            for (Student student : allStudents) {
-                if (student.getSid().equals(option4a)) {
-                    selectedStudent = student;
+            for (StudentEnrolment enrolment: enrolmentList) {
+                if (enrolment.getStudent().getSid().equals(option4a)) {
+                    selectedStudent = enrolment.getStudent();
                 }
             }
         } else {
             System.out.println("The student does not exist in the school!");
-            exit(allStudents, allCourses, enrolmentList);
+            exit( enrolmentList);
         }
         System.out.print("Please Enter semester: ");
         Scanner input4b = new Scanner(System.in);
@@ -127,90 +103,202 @@ public class StudentEnrolment {
         Scanner input4c = new Scanner(System.in);
         String option4c = input4c.next();
         ArrayList<String> courseID = new ArrayList<String>();
-        for (Course course : allCourses) {
-            courseID.add(course.getId());
+        for (StudentEnrolment enrolment : enrolmentList) {
+            courseID.add(enrolment.getCourse().getId());
         }
         if (courseID.contains(option4c)) {
-            for (Course course : allCourses) {
-                if (course.getId().equals(option4c)) {
-                    selectedCourse = course;
+            for (StudentEnrolment enrolment : enrolmentList) {
+                if (enrolment.getCourse().getId().equals(option4c)) {
+                    selectedCourse = enrolment.getCourse();
                 }
             }
         } else {
             System.out.println("Invalid course ID!");
-            exit(allStudents, allCourses, enrolmentList);
+            exit(enrolmentList);
+        }
+        enrolmentList.add(new StudentEnrolment(option4b, selectedStudent, selectedCourse));
+        System.out.println("Successfully enrolled student " + selectedStudent.getSid() + " to " + selectedCourse.getId() + " " + selectedCourse.getName());
+        try {
+            FileWriter csvWriter = new FileWriter("default.csv",true);
+            BufferedWriter bufferedWriter = new BufferedWriter(csvWriter);
+            bufferedWriter.write(selectedStudent.getSid()+',');
+            bufferedWriter.write(selectedStudent.getName()+',');
+            bufferedWriter.write(selectedStudent.getBirthdate()+',');
+            bufferedWriter.write(selectedCourse.getId()+',');
+            bufferedWriter.write(selectedCourse.getName()+',');
+            bufferedWriter.write(String.valueOf(selectedCourse.getCredit())+',');
+            bufferedWriter.write(option4b+'\n');
+            bufferedWriter.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        exit(enrolmentList);
+    }
+
+    protected static void delete( List<StudentEnrolment> enrolmentList) {
+        Student selectedStudent = new Student("", "", "");
+        Course selectedCourse = new Course("", "", 0);
+        System.out.println("Enter the student ID: ");
+        Scanner input4a = new Scanner(System.in);
+        String option4a = input4a.next();
+        ArrayList<String> studentSID = new ArrayList<String>();
+        for (StudentEnrolment enrolment : enrolmentList) {
+            studentSID.add(enrolment.getStudent().getSid());
+        }
+
+        if (studentSID.contains(option4a)) {
+            for (StudentEnrolment enrolment: enrolmentList) {
+                if (enrolment.getStudent().getSid().equals(option4a)) {
+                    selectedStudent = enrolment.getStudent();
+                }
+            }
+        } else {
+            System.out.println("The student does not exist in the school!");
+            exit( enrolmentList);
+        }
+        System.out.print("Please Enter semester: ");
+        Scanner input4b = new Scanner(System.in);
+        String option4b = input4b.next();
+        System.out.print("Please Enter the course ID: ");
+        Scanner input4c = new Scanner(System.in);
+        String option4c = input4c.next();
+        ArrayList<String> courseID = new ArrayList<String>();
+        for (StudentEnrolment enrolment : enrolmentList) {
+            courseID.add(enrolment.getCourse().getId());
+        }
+        if (courseID.contains(option4c)) {
+            for (StudentEnrolment enrolment : enrolmentList) {
+                if (enrolment.getCourse().getId().equals(option4c)) {
+                    selectedCourse = enrolment.getCourse();
+                }
+            }
+        } else {
+            System.out.println("Invalid course ID!");
+            exit( enrolmentList);
         }
         enrolmentList.remove(new StudentEnrolment(option4b, selectedStudent, selectedCourse));
         System.out.println("Successfully cancel the enrolment of student " + selectedStudent.getSid() + " to Course" + selectedCourse.getId() + " " + selectedCourse.getName());
-        exit(allStudents, allCourses, enrolmentList);
+        exit( enrolmentList);
     }
 
 
-    public static void showAllCourses(ArrayList<Student> allStudents, ArrayList<Course> allCourses, List<StudentEnrolment> enrolmentList) {
-        System.out.println(allCourses);
-        exit(allStudents, allCourses, enrolmentList);
-    }
+    protected static void showStudentInfo(List<StudentEnrolment> enrolmentList){
+        try {
+            FileWriter csvWriter = new FileWriter("student_info.csv",true);
+            BufferedWriter bufferedWriter = new BufferedWriter(csvWriter);
 
-    public static void showAllStudents(ArrayList<Student> allStudents, ArrayList<Course> allCourses, List<StudentEnrolment> enrolmentList) {
-        System.out.println(allStudents);
-        exit(allStudents, allCourses, enrolmentList);
-    }
+            Scanner input3 = new Scanner(System.in);
+            System.out.println("Please enter the student sId :");
+            String option3 = input3.next();
 
-    public static void showStudentInfo(ArrayList<Student> allStudents, ArrayList<Course> allCourses, List<StudentEnrolment> enrolmentList) {
-        Scanner input3 = new Scanner(System.in);
-        System.out.println("Please enter the student sId :");
-        String option3 = input3.next();
-        for (Student student : allStudents) {
-            if (student.getSid().equals(option3)) {
-                System.out.println("Student information: ");
-                System.out.println(student);
+            for (StudentEnrolment enrolment : enrolmentList) {
+                if (enrolment.getStudent().getSid().equals(option3)) {
+                    System.out.println("Student information: ");
+                    System.out.println(enrolment.getStudent());
+                    bufferedWriter.write(enrolment.getStudent().getSid()+',');
+                    bufferedWriter.write(enrolment.getStudent().getName()+',');
+                    bufferedWriter.write(enrolment.getStudent().getBirthdate()+',');
+                }
             }
-        }
-        System.out.println("Course Enrolled: ");
-        for (StudentEnrolment enrolment : enrolmentList) {
-            if (enrolment.getStudent().getSid().equals(option3)) {
-                System.out.println("ID: " + enrolment.getCourse().getId() + " - " + enrolment.getCourse().getName());
-            }
-        }
-        exit(allStudents, allCourses, enrolmentList);
 
+            System.out.println("Course Enrolled: ");
+            for (StudentEnrolment enrolment : enrolmentList) {
+                if (enrolment.getStudent().getSid().equals(option3)) {
+                    bufferedWriter.write(enrolment.getCourse().getId()+',');
+                    bufferedWriter.write(enrolment.getCourse().getName()+',');
+                    bufferedWriter.write(String.valueOf(enrolment.getCourse().getCredit()));
+                    System.out.println("ID: " + enrolment.getCourse().getId() + " - " + enrolment.getCourse().getName());
+                }
+            }
+                bufferedWriter.write('\n');
+                bufferedWriter.close();
+                exit(enrolmentList);
+            }catch (IOException e){
+                e.printStackTrace();
+
+        }
     }
 
-    public static void showCourseInfo(ArrayList<Student> allStudents, ArrayList<Course> allCourses, List<StudentEnrolment> enrolmentList) {
-        System.out.println("Enter the course ID: ");
-        Scanner input2 = new Scanner(System.in);
-        String option2 = input2.next();
+    protected static void showCourseInfo(List<StudentEnrolment> enrolmentList) {
+        try {
+            FileWriter csvWriter = new FileWriter("course_info.csv",true);
+            BufferedWriter bufferedWriter = new BufferedWriter(csvWriter);
+
+            System.out.println("Enter the course ID: ");
+            Scanner input2 = new Scanner(System.in);
+            String option2 = input2.next();
+            int k = 0;
+            for (StudentEnrolment enrolment : enrolmentList) {
+                if (enrolment.getCourse().getId().equals(option2)) {
+                    k++;
+                    System.out.println("sId: " + enrolment.getStudent().getSid() + " Name: " + enrolment.getStudent().getName());
+                    bufferedWriter.write(enrolment.getStudent().getSid()+',');
+                    bufferedWriter.write(enrolment.getStudent().getName()+',');
+                    bufferedWriter.write(enrolment.getStudent().getBirthdate());
+                    bufferedWriter.write('\n');
+                }
+            }
+            bufferedWriter.flush();
+            bufferedWriter.close();
+            if (k == 0) {
+                System.out.println("There is no students in that course!");
+            }
+            exit(enrolmentList);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    protected static void showSemesterInfo(List<StudentEnrolment> enrolmentList) {
+        try {FileWriter csvWriter = new FileWriter("semester_info.csv",true);
+            BufferedWriter bufferedWriter = new BufferedWriter(csvWriter);
+
+        Scanner input1 = new Scanner(System.in);
+        System.out.print("Please enter the semester :");
+        String option = input1.next();
         int k = 0;
         for (StudentEnrolment enrolment : enrolmentList) {
-            if (enrolment.getCourse().getId().equals(option2)) {
+            if (enrolment.getSemester().equals(option)) {
                 k++;
-                System.out.println("sId: " + enrolment.getStudent().getSid() + " Name: " + enrolment.getStudent().getName());
+                System.out.println("Course id: " + enrolment.getCourse().getId() + " Course Name: " + enrolment.getCourse().getName());
+                bufferedWriter.write(enrolment.getCourse().getId()+',');
+                bufferedWriter.write(enrolment.getCourse().getName()+',');
+                bufferedWriter.write(String.valueOf(enrolment.getCourse().getCredit())+',');
+                bufferedWriter.write(option);
+                bufferedWriter.write('\n');
+
             }
         }
+        bufferedWriter.flush();
+        bufferedWriter.close();
         if (k == 0) {
-            System.out.println("There is no students in that course!");
+            System.out.println("There is no courses in that semester!");
         }
-        exit(allStudents, allCourses, enrolmentList);
+        exit( enrolmentList);}
+        catch (IOException e){
+            e.printStackTrace();
+        }
     }
-
-    public static boolean exit(ArrayList<Student> allStudents, ArrayList<Course> allCourses, List<StudentEnrolment> enrolmentList) {
+    protected static void exit(List<StudentEnrolment> enrolmentList) {
         System.out.println("Do you want to exit the program? (y/n)");
         Scanner next = new Scanner(System.in);
         String action = next.next();
         if (action.toLowerCase().equals("n") || action.toLowerCase().equals("no")) {
-            mainMenu(allStudents, allCourses, enrolmentList);
+            mainMenu( enrolmentList);
         } else if (action.toLowerCase().equals("y") || action.toLowerCase().equals("yes")) {
             System.out.println("System exited");
         } else {
             System.out.println("Invalid input!");
-            exit(allStudents, allCourses, enrolmentList);
+            exit(enrolmentList);
         }
-        return true;
     }
 
 
 
-    public static void mainMenu(ArrayList<Student> allStudents,ArrayList<Course> allCourses, List<StudentEnrolment> enrolmentList) {
+
+    protected static void mainMenu(List<StudentEnrolment> enrolmentList) {
         System.out.println("Main Menu");
         System.out.println("1.Show all courses in a semester");
         System.out.println("2.Show all students in a course");
@@ -221,100 +309,59 @@ public class StudentEnrolment {
         System.out.print("Please choose an option: ");
         int option = user.nextInt();
         if (option == 1) {
-            showSemesterInfo(allStudents,allCourses,enrolmentList);
+            showSemesterInfo(enrolmentList);
         }
         else if (option == 2) {
-            showCourseInfo(allStudents,allCourses,enrolmentList);
+            showCourseInfo(enrolmentList);
         }
         else if (option == 3) {
-            showStudentInfo(allStudents,allCourses, enrolmentList);
+            showStudentInfo(enrolmentList);
         }
         else if (option == 4) {
-            enrol(allStudents,allCourses,enrolmentList);
+            enrol(enrolmentList);
         }
         else if (option ==5){
-            delete(allStudents,allCourses,enrolmentList);
+            delete(enrolmentList);
         }
     }
 
 
-    public static void showSemesterInfo(ArrayList<Student> allStudents, ArrayList<Course> allCourses, List<StudentEnrolment> enrolmentList) {
-        Scanner input1 = new Scanner(System.in);
-        System.out.print("Please enter the semester :");
-        String option = input1.next();
-        int k = 0;
-        for (StudentEnrolment enrolment : enrolmentList) {
-            if (enrolment.getSemester().equals(option)) {
-                k++;
-                System.out.println("Course id: " + enrolment.getCourse().getId() + " Course Name: " + enrolment.getCourse().getName());
-            }
-        }
-        if (k == 0) {
-            System.out.println("There is no courses in that semester!");
-        }
-        exit(allStudents, allCourses, enrolmentList);
-    }
 
+    private static List<StudentEnrolment> readBooksFromCSV(String fileName)
+    { List<StudentEnrolment> enrolmentRecords = new ArrayList<>();
+    Path pathToFile = Paths.get(fileName);
+        try (BufferedReader br = Files.newBufferedReader(pathToFile, StandardCharsets.US_ASCII))
+        {
+            String line = br.readLine();
+            while (line != null) {
+                String[] attributes = line.split(",");
+                StudentEnrolment enrolmentRecord = createEnrolment(attributes);
+                enrolmentRecords.add(enrolmentRecord);
+                line = br.readLine(); } }
+        catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        return enrolmentRecords;
+    }
 
     public static void main(String[] args) {
 
-        //Create new students
-        Student student1 = new Student("s3832957", "Nguyen Thi Hoa", "21/05/1995");
-        Student student2 = new Student("s3847491", "John Junior", "01/07/1996");
-        Student student3 = new Student("s3545984", "Dang Thi Anh", "03/09/1990");
-        Student student4 = new Student("s3965875", "Hoang Vu Minh Nhat", "22/2/1999");
-        Student student5 = new Student("s3219402", "Phan Van An", "01/01/1991");
-        Student student6 = new Student("s3231090", "Nguyen Tan Khoi", "22/03/1995");
-        Student student7 = new Student("s3543908", "Nguyen Anh Duy", "15/08/1994");
-        Student student8 = new Student("s3124324", "Robert Maggy", "11/03/2000");
+
+        //Start console App
+        System.out.println("Do you want to import an CSV file? type n or no if you don't want to!");
+        Scanner user = new Scanner(System.in);
+        String answer = user.next();
+        if (answer.toLowerCase().equals("n")||answer.toLowerCase().equals("no")){
+            List<StudentEnrolment> studentEnrolmentList = readBooksFromCSV("C:\\Users\\ADMIN\\Desktop\\SES\\Student-Enrolment-System\\default.csv");
+            mainMenu(studentEnrolmentList);
+        } else{
+            Scanner file = new Scanner(System.in);
+            String csv = file.next();
+            List<StudentEnrolment> studentEnrolmentList = readBooksFromCSV(csv);
+            mainMenu(studentEnrolmentList);
+        }
 
 
-        ArrayList<Student> allStudents = new ArrayList<Student>();
-
-        //Add all the student info into the database
-        allStudents.add(student1);
-        allStudents.add(student2);
-        allStudents.add(student3);
-        allStudents.add(student4);
-        allStudents.add(student5);
-        allStudents.add(student6);
-        allStudents.add(student7);
-        allStudents.add(student8);
-
-        //Create new courses
-        Course course1 = new Course("O2SNDS5", "Introduction to Information Technology", 12);
-        Course course2 = new Course("12543MS", "Introduction to International Business", 12);
-        Course course3 = new Course("9DSANJO", "Software Engineering Project Management", 12);
-        Course course4 = new Course("45SHJAH", "Vietnamese 1", 12);
-        Course course5 = new Course("45XNFHS", "Digital Marketing", 12);
-        Course course6 = new Course("12ZXMND", "Dipomatic", 12);
-
-        //Add all the courses to the approritate semester
-
-        ArrayList<Course> allCourses = new ArrayList<Course>();
-
-        allCourses.add(course1);
-        allCourses.add(course2);
-        allCourses.add(course3);
-        allCourses.add(course4);
-        allCourses.add(course5);
-        allCourses.add(course6);
-
-        List<StudentEnrolment> enrolmentRecord = new ArrayList<StudentEnrolment>();
-
-
-        enrolmentRecord.add(new StudentEnrolment("2018A",student4,course3));
-        enrolmentRecord.add(new StudentEnrolment("2021C", student1, course4));
-        enrolmentRecord.add(new StudentEnrolment("2021A", student3, course2));
-        enrolmentRecord.add(new StudentEnrolment("2021B", student6, course1));
-        enrolmentRecord.add(new StudentEnrolment("2021C", student2, course4));
-        enrolmentRecord.add(new StudentEnrolment("2020C", student3, course1));
-        enrolmentRecord.add(new StudentEnrolment("2021A", student4, course6));
-        enrolmentRecord.add(new StudentEnrolment("2020A", student7, course3));
-        enrolmentRecord.add(new StudentEnrolment("2021B", student8, course5));
-
-        //Console App interface
-        mainMenu(allStudents,allCourses,enrolmentRecord);
 
 
     }
