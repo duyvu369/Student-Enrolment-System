@@ -61,7 +61,7 @@ public class StudentEnrolment {
     public void setSemester(String semester) {
         this.semester = semester;
     }
-
+    //Create a StudentEnrolment list using a csv file
     protected static StudentEnrolment createEnrolment(String[] fileInput){
         String sid = fileInput[0];
         String name = fileInput[1];
@@ -74,18 +74,21 @@ public class StudentEnrolment {
         String semester = fileInput[6];
         return new StudentEnrolment(semester,student,course);
     }
-
+    //Enrol a student into a course
     protected static void enrol(List<StudentEnrolment> enrolmentList) {
         Student selectedStudent = new Student("", "", "");
         Course selectedCourse = new Course("", "", 0);
+        //Ask user for student ID
         System.out.println("Enter the student ID: ");
         Scanner input4a = new Scanner(System.in);
         String option4a = input4a.next();
+
+        //Check if the student ID exists
+
         ArrayList<String> studentSID = new ArrayList<String>();
         for (StudentEnrolment enrolment : enrolmentList) {
             studentSID.add(enrolment.getStudent().getSid());
         }
-
         if (studentSID.contains(option4a)) {
             for (StudentEnrolment enrolment: enrolmentList) {
                 if (enrolment.getStudent().getSid().equals(option4a)) {
@@ -96,12 +99,17 @@ public class StudentEnrolment {
             System.out.println("The student does not exist in the school!");
             exit( enrolmentList);
         }
+        //Ask the user for the semester info
         System.out.print("Please Enter semester: ");
         Scanner input4b = new Scanner(System.in);
         String option4b = input4b.next();
+
+        //Ask the user to input the course ID
         System.out.print("Please Enter the course ID: ");
         Scanner input4c = new Scanner(System.in);
         String option4c = input4c.next();
+
+        //Check if that course ID exist
         ArrayList<String> courseID = new ArrayList<String>();
         for (StudentEnrolment enrolment : enrolmentList) {
             courseID.add(enrolment.getCourse().getId());
@@ -116,9 +124,13 @@ public class StudentEnrolment {
             System.out.println("Invalid course ID!");
             exit(enrolmentList);
         }
+        //add the new enrolment to the database
         enrolmentList.add(new StudentEnrolment(option4b, selectedStudent, selectedCourse));
+        //dis a message
         System.out.println("Successfully enrolled student " + selectedStudent.getSid() + " to " + selectedCourse.getId() + " " + selectedCourse.getName());
+
         try {
+            //Write the enrolment into the csv file
             FileWriter csvWriter = new FileWriter("default.csv",true);
             BufferedWriter bufferedWriter = new BufferedWriter(csvWriter);
             bufferedWriter.write(selectedStudent.getSid()+',');
@@ -132,11 +144,12 @@ public class StudentEnrolment {
         }catch (IOException e){
             e.printStackTrace();
         }
-
+        //Ask if user want to go back to main menu
         exit(enrolmentList);
     }
 
     protected static void delete( List<StudentEnrolment> enrolmentList) {
+        //same as enrol a student
         Student selectedStudent = new Student("", "", "");
         Course selectedCourse = new Course("", "", 0);
         System.out.println("Enter the student ID: ");
@@ -185,6 +198,7 @@ public class StudentEnrolment {
 
     protected static void showStudentInfo(List<StudentEnrolment> enrolmentList){
         try {
+            //Write the result to a csv file
             FileWriter csvWriter = new FileWriter("student_info.csv");
             BufferedWriter bufferedWriter = new BufferedWriter(csvWriter);
 
@@ -222,9 +236,10 @@ public class StudentEnrolment {
 
     protected static void showCourseInfo(List<StudentEnrolment> enrolmentList) {
         try {
+            //write the result to a csv file
             FileWriter csvWriter = new FileWriter("course_info.csv");
             BufferedWriter bufferedWriter = new BufferedWriter(csvWriter);
-
+            //Ask user to type the Course ID
             System.out.println("Enter the course ID: ");
             Scanner input2 = new Scanner(System.in);
             String option2 = input2.next();
@@ -252,6 +267,7 @@ public class StudentEnrolment {
     }
 
     protected static void showSemesterInfo(List<StudentEnrolment> enrolmentList) {
+        //Write the result to a csv file
         try {FileWriter csvWriter = new FileWriter("semester_info.csv");
             BufferedWriter bufferedWriter = new BufferedWriter(csvWriter);
 
@@ -281,6 +297,13 @@ public class StudentEnrolment {
             e.printStackTrace();
         }
     }
+    protected static void showEnrolmentHistory(List<StudentEnrolment> studentEnrolmentList){
+        for(StudentEnrolment enrolment:studentEnrolmentList){
+            System.out.println(enrolment);
+            exit(studentEnrolmentList);
+        }
+    }
+    //After choosing an option, user can exit or go back to main menu
     protected static void exit(List<StudentEnrolment> enrolmentList) {
         System.out.println("Do you want to exit the program? (y/n)");
         Scanner next = new Scanner(System.in);
@@ -295,9 +318,7 @@ public class StudentEnrolment {
         }
     }
 
-
-
-
+    //Program interface and functions
     protected static void mainMenu(List<StudentEnrolment> enrolmentList) {
         System.out.println("Main Menu");
         System.out.println("1.Show all courses in a semester");
@@ -305,6 +326,7 @@ public class StudentEnrolment {
         System.out.println("3.Show a student info");
         System.out.println("4.Enrol a student");
         System.out.println("5.Cancel an enrolment");
+        System.out.println("6.Show enrolment history");
         Scanner user = new Scanner(System.in);
         System.out.print("Please choose an option: ");
         int option = user.nextInt();
@@ -323,10 +345,14 @@ public class StudentEnrolment {
         else if (option ==5){
             delete(enrolmentList);
         }
+        else if (option ==6){
+            showEnrolmentHistory(enrolmentList);
+        } else {
+            exit(enrolmentList);
+        }
     }
 
-
-
+    //read csv file and generate StudentEnrolment list
     private static List<StudentEnrolment> readBooksFromCSV(String fileName)
     { List<StudentEnrolment> enrolmentRecords = new ArrayList<>();
     Path pathToFile = Paths.get(fileName);
@@ -346,7 +372,6 @@ public class StudentEnrolment {
 
     public static void main(String[] args) {
 
-
         //Start console App
         System.out.println("Do you want to import an CSV file? type n or no if you don't want to!");
         Scanner user = new Scanner(System.in);
@@ -361,10 +386,6 @@ public class StudentEnrolment {
             List<StudentEnrolment> studentEnrolmentList = readBooksFromCSV(csv);
             mainMenu(studentEnrolmentList);
         }
-
-
-
-
     }
 }
 
